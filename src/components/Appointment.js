@@ -15,8 +15,9 @@ import moment from "moment-timezone"
 import { jwtDecode } from "jwt-decode"
 import { getAvailableTimeSlots } from "../middleware/getSlots"
 import { v4 as uuidv4 } from "uuid"
+import axios from "axios"
 
-const Appointment = () => {
+const Appointment = ({onFetchEvents}) => {
   const [appointmentData, setAppointmentData] = useState({
     title: "",
     description: "",
@@ -36,7 +37,7 @@ const Appointment = () => {
     e.preventDefault()
 
     try {
-      //const decoded = jwtDecode(localStorage.getItem("token"))
+      const decoded = jwtDecode(localStorage.getItem("token"))
 
       let formattedData = {
         ...appointmentData,
@@ -44,7 +45,7 @@ const Appointment = () => {
           .tz(appointmentData.start, appointmentData.timeZone)
           .format(),
         end: moment.tz(appointmentData.end, appointmentData.timeZone).format(),
-        // userId: decoded.userId,
+        userId: decoded.userId,
       }
       const availableSlots = getAvailableTimeSlots(
         formattedData.start,
@@ -53,34 +54,31 @@ const Appointment = () => {
       )
 
       formattedData.totalSlots = availableSlots
-      //   await axios.post('/appointments', formattedData);
-      console.log(formattedData, "decoded")
-
-      alert(JSON.stringify(availableSlots, null, 2))
-      const getData = () => JSON.parse(localStorage.getItem("slots")) || []
-      const storedData = getData()
-      storedData.push(formattedData)
-      localStorage.setItem("slots", JSON.stringify(storedData))
-
-      alert("Appointment scheduled successfully!")
+      // const getData = () => JSON.parse(localStorage.getItem("slots")) || []
+      // const storedData = getData()
+      // storedData.push(formattedData)
+      // localStorage.setItem("slots", JSON.stringify(storedData))
+      const response = await axios.post('http://localhost:5000/user/event',formattedData)
+      onFetchEvents()
+      alert("Appointment scheduled successfully!",response.data)
     } catch (err) {
       console.error("Error scheduling appointment", err)
     }
   }
 
   // Function to generate time options in 15-minute intervals
-  const generateTimeOptions = (startTime, endTime) => {
-    const times = []
-    const start = moment(startTime, "HH:mm")
-    const end = moment(endTime, "HH:mm")
-    while (start <= end) {
-      times.push(start.format("HH:mm"))
-      start.add(15, "minutes")
-    }
-    return times
-  }
+  // const generateTimeOptions = (startTime, endTime) => {
+  //   const times = []
+  //   const start = moment(startTime, "HH:mm")
+  //   const end = moment(endTime, "HH:mm")
+  //   while (start <= end) {
+  //     times.push(start.format("HH:mm"))
+  //     start.add(15, "minutes")
+  //   }
+  //   return times
+  // }
 
-  const timeOptions = generateTimeOptions("08:00", "20:00") // Set your desired range here
+  // const timeOptions = generateTimeOptions("08:00", "20:00") // Set your desired range here
 
   return (
     <Container sx={{ justifyContent: "center" }}>

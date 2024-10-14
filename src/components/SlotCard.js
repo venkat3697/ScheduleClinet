@@ -10,7 +10,7 @@ import { Box } from "@mui/material"
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled"
 
 export default function SlotCard(props) {
-  const { description, title, slotMinutes, eventId } = props.slotData
+  const { description, title, slotMinutes,_id } = props.slotData
   return (
     <Card sx={{ width: 400 }}>
       <CardContent>
@@ -38,7 +38,7 @@ export default function SlotCard(props) {
       <CardActions>
         <Button size="small">
           <Link
-            to={`/appointment/${eventId}`}
+            to={`/appointment/${_id}`}
             style={{ textDecoration: "none" }}
           >
             Share

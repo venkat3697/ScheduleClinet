@@ -107,7 +107,7 @@
 
 // export default TimeIntervalCalendar;
 
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react";
 import {
   TextField,
   Box,
@@ -117,34 +117,49 @@ import {
   Typography,
   Button,
   IconButton,
-} from "@mui/material"
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
-import { useParams } from "react-router-dom"
-import ScheduleSendIcon from "@mui/icons-material/ScheduleSend"
-function TimeIntervalCalendar() {
-  const getData = () => JSON.parse(localStorage.getItem("slots")) || []
-  const storedData = getData()
-  const { id } = useParams()
+} from "@mui/material";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { useParams } from "react-router-dom";
+import ScheduleSendIcon from "@mui/icons-material/ScheduleSend";
+import { jwtDecode } from "jwt-decode";
+import axios from "axios";
 
-  const filteredEvent = storedData.filter((item) => id === item.eventId)
+
+function TimeIntervalCalendar() {
+  const { id } = useParams();
+  const [timeSlots,setTimeSlots] = useState({})
+  const getUserEvents = async ()=>{
+    const response  = await axios.get(`http://localhost:5000/user/event/${id}`)
+    if(response.data.events){
+      setTimeSlots(response.data.events)
+    }else{
+      alert(response.data.message)
+    }
+    console.log(response)
+
+  }
+  useEffect(() => {
+    getUserEvents()
+   
+  }, [])
 
   const BookEvent = () => {
-    alert("Event Booked")
-  }
+    alert("Event Booked");
+  };
 
   return (
     <>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2, p: 2 }}>
           <Typography variant="h4">Time Slots</Typography>
-          {filteredEvent.length > 0 && (
-            <Typography variant="h6">{filteredEvent[0].title}</Typography>
-          )}
+          
+            <Typography variant="h6">{timeSlots.title}</Typography>
+          
           <List sx={{ width: "300px" }}>
-            {filteredEvent.length > 0 && filteredEvent[0].totalSlots ? (
-              filteredEvent[0].totalSlots.length > 0 ? (
-                filteredEvent[0].totalSlots.map((interval, index) => (
+            {timeSlots.totalSlots ? (
+              timeSlots.totalSlots.length > 0 ? (
+                timeSlots.totalSlots.map((interval, index) => (
                   <ListItem
                     key={index}
                     disableGutters
@@ -169,7 +184,7 @@ function TimeIntervalCalendar() {
         </Box>
       </LocalizationProvider>
     </>
-  )
+  );
 }
 
-export default TimeIntervalCalendar
+export default TimeIntervalCalendar;

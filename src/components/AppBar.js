@@ -12,9 +12,9 @@ const NavBar = ({ isAuthenticated, onLogout }) => {
             Scheduling Platform
           </Typography>
           <Box>
-            <Button color="inherit" component={Link} to="/">
+            {/* <Button color="inherit" component={Link} to="/">
               Home
-            </Button>
+            </Button> */}
 
             {isAuthenticated ? (
               <>
